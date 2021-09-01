@@ -1,27 +1,24 @@
-mod lib;
-use lib::*;
 use std::error::Error;
 
-#[derive(Debug, serde::Serialize)]
-struct Requestx {
-    user: String,
-    pwd: String,
-}
+mod api;
+
+use api::*;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
-    let obj = Requestx {
-        user: "ads".to_string(),
-        pwd: "dscxv".to_string(),
-    };
+    let cookie = "sessionid=自行填充";
+    if !is_checkin(cookie).await? {
+        checkin(cookie).await?;
+    } else {
+        println!("今日已签到！");
+    }
 
-    let resp = post(
-        "https://mcs.snssdk.com/v1/list",
-        obj,
-    )
-    .await?;
-
-    println!("{:?}", resp);
+    if have_free_lottery_count(cookie).await? {
+        println!("还有免费的抽奖机会~");
+        lottery(cookie).await?;
+    } else {
+        println!("今日免费一抽已抽取~");
+    }
 
     Ok(())
 }
