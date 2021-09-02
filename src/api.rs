@@ -22,6 +22,23 @@ async fn request(method: Method, url: &str, cookie: &str) -> Result<Value, Box<d
     Ok(res)
 }
 
+pub async fn checkin_status(cookie: &str) -> Result<(), Box<dyn Error>> {
+    let res = request(
+        Method::GET,
+        "https://api.juejin.cn/growth_api/v1/get_counts",
+        cookie,
+    )
+    .await?;
+
+    let data = res["data"].as_object().unwrap();
+    println!(
+        "已连续签到{}天，累计签到{}天~",
+        data["cont_count"], data["sum_count"]
+    );
+
+    Ok(())
+}
+
 pub async fn is_checkin(cookie: &str) -> Result<bool, Box<dyn Error>> {
     let res = request(
         Method::GET,

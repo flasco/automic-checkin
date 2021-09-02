@@ -1,5 +1,6 @@
 use std::env;
 use std::error::Error;
+use std::time::Duration;
 
 mod api;
 
@@ -22,8 +23,15 @@ async fn main() -> Result<(), Box<dyn Error>> {
         println!("今日已签到！");
     }
 
+    tokio::time::sleep(Duration::from_millis(500)).await;
+
+    checkin_status(&cookie).await?;
+
     if have_free_lottery_count(&cookie).await? {
         println!("还有免费的抽奖机会~");
+
+        tokio::time::sleep(Duration::from_millis(600)).await;
+
         lottery(&cookie).await?;
     } else {
         println!("今日免费一抽已抽取~");
